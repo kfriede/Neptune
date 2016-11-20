@@ -13,21 +13,30 @@ public class MessageHandler {
 	 * 
 	 * @param ip - IP of the TV
 	 * @param port - Port of the TV
+	 * @param timeout_opt - Timeout in milliseconds.  Set to 0 to use default timeout
 	 * @param username - NOT IMPLEMENTED
 	 * @param password - NOT IMPLEMENTED
 	 * @param command - 4 character command
-	 * @param parameter - 4 character parameter (padded with "space" if needed)
+	 * @param parameter - 4 character parameter (must be padded with "space" if shorter than 4 characters)
 	 * @return the response
 	 */
-	public static String sendCommand(InetAddress ip, Integer port, String username, String password, String command, String parameter) {
+	public static String sendCommand(InetAddress ip, Integer port, int timeout_opt, String username, String password, String command, String parameter) {
 		
 		BufferedReader reader;
 		BufferedWriter writer;
+
+		int timeout;
 		
 		String message = new String();
 		String response = null;
 		
 		message = ( command + parameter);
+
+		if (timeout_opt != 0) {		// user has set timeout property
+			timeout = timeout_opt;
+		} else {						// user has not set timeout property
+			timeout = DEFAULT_TIMEOUT;
+		}
 		
 		try {
 			
@@ -38,7 +47,7 @@ public class MessageHandler {
 			}
 			
 			Socket cSocket = new Socket();
-			cSocket.connect(new InetSocketAddress(ip, port), getTimeout());
+			cSocket.connect(new InetSocketAddress(ip, port), timeout);
 			
 			reader = new BufferedReader(new InputStreamReader(cSocket.getInputStream()));
 			writer = new BufferedWriter(new OutputStreamWriter(cSocket.getOutputStream()));
@@ -57,20 +66,6 @@ public class MessageHandler {
 		
 		
 		return response;
-	}
-	
-	private static int getTimeout() {
-		String timeout_prop = StorageHandler.PROPERTIES.getProperty("connection_timeout");
-		int timeout = 0;
-		
-		if (timeout_prop != null) {		// user has set timeout property
-			timeout = Integer.parseInt(timeout_prop);
-		} else {						// user has not set timeout property
-			
-			timeout = DEFAULT_TIMEOUT;
-		}
-		
-		return timeout;
 	}
 	
 }

@@ -27,17 +27,19 @@ public class InputFileHandler {
 
         JSONTokener tokener = new JSONTokener(in);
         JSONArray root = new JSONArray(tokener);
+        JSONArray nodes = root.getJSONObject(0).getJSONArray("values");
 
         /**
          * Parse JSON into objects
          */
-        for (int i = 0; i < root.length(); i++) {
+        for (int i = 0; i < nodes.length(); i++) {
             Television workingTelevision = null;
-            String name = root.getJSONObject(i).getString("name");
-            String ip = root.getJSONObject(i).getString("ip");
-            String port = root.getJSONObject(i).getString("port");
-            String username = root.getJSONObject(i).getString("username");
-            String password = root.getJSONObject(i).getString("password");
+            String name = nodes.getJSONObject(i).getString("name");
+            System.out.println("Name: " + name);
+            String ip = nodes.getJSONObject(i).getString("ip");
+            String port = nodes.getJSONObject(i).getString("port");
+            String username = nodes.getJSONObject(i).getString("username");
+            String password = nodes.getJSONObject(i).getString("password");
 
             try {
                 workingTelevision = new Television(name, ip, port, username, password);
